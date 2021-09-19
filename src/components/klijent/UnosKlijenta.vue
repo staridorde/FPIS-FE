@@ -21,8 +21,8 @@
     <el-select @change="handleCitySelected" v-model="mesto" placeholder="Odaberite mesto">
         <el-option
             v-for="var_mesto in mesta"
-            :key="var_mesto.id"
-            :label="var_mesto.naziv"
+            :key="var_mesto.postalCode"
+            :label="var_mesto.name"
             :value="var_mesto"
         >
         </el-option>
@@ -33,6 +33,15 @@
             :key="var_ulica.id"
             :label="var_ulica.naziv"
             :value="var_ulica.naziv"
+        >
+        </el-option>
+    </el-select>
+    <el-select v-model="sifraDelatnosti" placeholder="Odaberi sifru delatnosti">
+        <el-option
+            v-for="var_delatnos in delatnosti"
+            :key="var_delatnos.code"
+            :label="var_delatnos.name"
+            :value="var_delatnos"
         >
         </el-option>
     </el-select>
@@ -74,6 +83,7 @@ export default {
 
         const mesta = ref([])
         const ulice = ref([])
+        const delatnosti = ref([])
 
         const postClientObjectTemplate = {
             PIB: '',
@@ -98,31 +108,34 @@ export default {
         }
 
 
-        fetch('http://localhost:8080/vip/api/city', {
-            method: 'GET'
-        })
+        fetch('http://localhost:8080/vip/api/city')
             .then((response) => response.json())
-            .then((data) => console.log(data))
+            .then((data) => { 
+                mesta.value = data._embedded.city
+            })
+            .catch((error) => console.log(error))
 
-        fetch('http://localhost:8080/vip/api/activity', {
-            method: 'GET'
-        })
+        fetch('http://localhost:8080/vip/api/activity')
             .then((response) => response.json())
-            .then((data) => console.log(data))
+            .then((data) => {
+                delatnosti.value = data._embedded.activity
+            })
+            .catch((error) => console.log(error))
 
         
-        fetch('http://localhost:8080/vip/api/potentialClient', {
-            method: 'GET'
-        })
-            .then((response) => response.json())
+        fetch('http://localhost:8080/vip/api/potentialClient')
+            .then((response) => response.text())
             .then((data) => console.log(data))
+            .catch((error) => console.log(error))
     
         const handleCitySelected = () => {
             fetch(`http://localhost:8080/vip/client/${form.mesto.broj}`, {
-                method: 'GET'
+                method: 'GET',
+                mode: 'no-cors'
             })
                 .then((response) => response.json())
                 .then((data) => console.log(data))
+                .catch((error) => console.log(error))
         }
 
         const submitForm = () => {
@@ -151,6 +164,7 @@ export default {
             handleCitySelected,
             mesta,
             ulice,
+            delatnosti,
         }
     }
 }
