@@ -114,16 +114,16 @@ export default {
             name: '',
             email: '',
             webPage: '',
-            phone: '',
+            phoneNumber: '',
             yearOfEstablishment: '',
             address: {
                 id: 0,
-                number: 0
+                number: 0,
+                city: {
+                    postalCode: 0
+                }
             },
-            city: {
-                postalCode: 0
-            },
-            potentialClient: {
+            potentialClient:{
                 id: 0
             },
             activity: {
@@ -177,13 +177,14 @@ export default {
             postClientObjectTemplate.PIB = currentClient.value.pib
             postClientObjectTemplate.name = currentClient.value.name
             postClientObjectTemplate.webPage = currentClient.value.webPage
-            postClientObjectTemplate.phone = currentClient.value.phoneNumber
+            postClientObjectTemplate.phoneNumber = currentClient.value.phoneNumber
             postClientObjectTemplate.yearOfEstablishment = parseInt(currentClient.value.yearOfEstablishment)
             postClientObjectTemplate.address.id = currentClient.value.address.id
             postClientObjectTemplate.address.number = parseInt(currentClient.value.address.number)
-            postClientObjectTemplate.city.postalCode = currentClient.value.address.city.postalCode
+            postClientObjectTemplate.address.city.postalCode = currentClient.value.address.city.postalCode
             postClientObjectTemplate.potentialClient = currentClient.value.potentialClient
             postClientObjectTemplate.activity.code = currentClient.value.activity.code
+            postClientObjectTemplate.email = currentClient.value.email
             console.log(postClientObjectTemplate)
             fetch(`http://localhost:8080/vip/api/client/${currentClient.value.id}`, {
                 method: 'PUT',
