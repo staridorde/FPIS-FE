@@ -46,6 +46,12 @@ export default {
             case '1-1':
               routerObj.path = '/unosKlijenta'
               break
+            case '1-2':
+              routerObj.path = '/izmenaKlijenta'
+              break
+            case '1-3':
+              routerObj.path = '/pretragaKlijenta'
+              break
           }
           break
         case '2':
