@@ -10,7 +10,7 @@
         <el-input v-model="telefon"></el-input>
     </el-form-item>
     <el-form-item label="E-mail">
-        <el-input v-model="eMail"></el-input>
+        <el-input v-model="email"></el-input>
     </el-form-item>
     <el-form-item label="Web strana">
         <el-input v-model="webStrana"></el-input>
@@ -74,7 +74,7 @@ export default {
           pib: '',
           nazivKlijenta: '',
           telefon: '',
-          eMail: '',
+          email: '',
           webStrana: '',
           godinaOsnivanja: '',
           ulica: '',
@@ -90,11 +90,11 @@ export default {
         const potencijalniKlijenti = ref([])
 
         const postClientObjectTemplate = {
-            PIB: '',
+            pib: '',
             name: '',
             email: '',
             webPage: '',
-            phone: '',
+            phoneNumber: '',
             yearOfEstablishment: '',
             address: {
                 id: 0,
@@ -146,10 +146,11 @@ export default {
 
         const submitForm = () => {
             console.log(JSON.parse(JSON.stringify(form)))
-            postClientObjectTemplate.PIB = form.pib
+            postClientObjectTemplate.pib = form.pib
             postClientObjectTemplate.name = form.nazivKlijenta
             postClientObjectTemplate.webPage = form.webStrana
-            postClientObjectTemplate.phone = form.telefon
+            postClientObjectTemplate.phoneNumber = form.telefon
+            postClientObjectTemplate.email = form.email
             postClientObjectTemplate.yearOfEstablishment = parseInt(form.godinaOsnivanja)
             postClientObjectTemplate.address.id = form.ulica.id
             postClientObjectTemplate.address.number = parseInt(form.broj)

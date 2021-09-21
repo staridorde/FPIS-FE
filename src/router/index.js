@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import UnosKlijenta from '../components/klijent/UnosKlijenta.vue'
 import PretragaKlijenta from '../components/klijent/PretragaKlijenta.vue'
 import UnosZahteva from '../components/zahtev/UnosZahteva.vue'
+import IzmenaZahteva from '../components/zahtev/IzmenaZahteva.vue'
 
 const routes = [
   {
@@ -23,6 +24,11 @@ const routes = [
     path: '/pretragaKlijenta',
     name: 'PretragaKlijenta',
     component: PretragaKlijenta
+  },
+  {
+    path: '/izmenaZahteva',
+    name: 'IzmenaZahteva',
+    component: IzmenaZahteva
   }
 ]
 

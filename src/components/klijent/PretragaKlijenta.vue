@@ -13,7 +13,7 @@
       <el-table-column prop="id" label="ID"></el-table-column>
       <el-table-column prop="name" label="Naziv"></el-table-column>
       <el-table-column prop="pib" label="PIB"></el-table-column>
-      <el-table-column prop="address" label="Mesto"></el-table-column>
+      <el-table-column prop="address.city.name" label="Mesto"></el-table-column>
       <el-table-column label="Edit">
         <template #default="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
@@ -52,7 +52,7 @@
             >
             </el-option>
         </el-select>
-        <el-select v-model="currentClient.address" placeholder="Odaberite ulicu">
+        <el-select v-model="currentClient.address.street" placeholder="Odaberite ulicu">
             <el-option
                 v-for="street in streets"
                 :key="street.id"
@@ -171,6 +171,7 @@ export default {
             currentClient.value = form.clients[index]
             console.log(currentClient.value)
         }
+
 
         const handleSaveEdit = () => {
             // console.log(JSON.parse(JSON.stringify(form)))

@@ -4,8 +4,8 @@
     :model="form"
     label-width="120px"
   >
-    <el-form-item label="Odaberite zaposlenog">
-      <el-select v-model="form.zaposleni">
+    <el-form-item>
+      <el-select v-model="form.zaposleni" placeholder="Odaberite zaposlenog">
           <el-option
               v-for="zaposlen in sviZaposleni"
               :key="zaposlen.id"
@@ -15,7 +15,7 @@
           </el-option>
       </el-select>
     </el-form-item>
-    <el-form-item label="Datum">
+    <el-form-item label="Datum(dd-mm-yyyy)">
         <el-input v-model="form.datum"></el-input>
     </el-form-item>
     <el-form-item label="Odobreno">
@@ -81,9 +81,7 @@ export default {
 
     const requestTemplate = {
       approved: undefined,
-      employee: {
-        id: undefined
-      },
+      employee: {},
       requestItems: [],
       date: ''
     }
@@ -96,6 +94,7 @@ export default {
     fetch('http://localhost:8080/vip/api/employee')
       .then((response) => response.json())
       .then((data) => {
+        console.log(data)
         sviZaposleni.value = data._embedded.employee
       })
 
@@ -145,7 +144,7 @@ export default {
 
     const handleSubmitForm = () => {
       requestTemplate.approved = form.odobreno === 'Da' ? true : false
-      requestTemplate.employee.id = form.zaposleni.id
+      requestTemplate.employee = form.zaposleni
       requestTemplate.date = form.datum
       requestTemplate.requestItems = requestItems.value.map((item) => {
         return {

@@ -11,14 +11,12 @@
       <el-sub-menu index="1">
         <template #title>Klijent</template>
         <el-menu-item index="1-1">Unos novog klijenta</el-menu-item>
-        <el-menu-item index="1-2">Izmena informacija o klijentu</el-menu-item>
-        <el-menu-item index="1-3">Pretraga klijenata</el-menu-item>
+        <el-menu-item index="1-2">Pretraga klijenata</el-menu-item>
       </el-sub-menu>
       <el-sub-menu index="2">
         <template #title>Tehnicki uslovi</template>
         <el-menu-item index="2-1">Unos zahteva</el-menu-item>
         <el-menu-item index="2-2">Izmena zahteva</el-menu-item>
-        <el-menu-item index="2-3">Pretraga zahteva</el-menu-item>
       </el-sub-menu>
     </el-menu>
   </el-header>
@@ -47,9 +45,6 @@ export default {
               routerObj.path = '/unosKlijenta'
               break
             case '1-2':
-              routerObj.path = '/izmenaKlijenta'
-              break
-            case '1-3':
               routerObj.path = '/pretragaKlijenta'
               break
           }
@@ -58,6 +53,9 @@ export default {
           switch(childKey) {
             case '2-1':
               routerObj.path = '/unosZahteva'
+              break
+            case '2-2':
+              routerObj.path = '/izmenaZahteva'
               break
           }
           break
