@@ -18,48 +18,60 @@
     <el-form-item label="Godina osnivanja">
         <el-input v-model="godinaOsnivanja"></el-input>
     </el-form-item>
-    <el-select @change="handleCitySelected" v-model="mesto" placeholder="Odaberite mesto">
-        <el-option
-            v-for="var_mesto in mesta"
-            :key="var_mesto.postalCode"
-            :label="var_mesto.name"
-            :value="var_mesto"
-        >
-        </el-option>
-    </el-select>
-    <el-select v-model="ulica" placeholder="Odaberi ulicu">
-        <el-option
-            v-for="var_ulica in ulice"
-            :key="var_ulica.id"
-            :label="var_ulica.street"
-            :value="var_ulica"
-        >
-        </el-option>
-    </el-select>
-    <el-select v-model="sifraDelatnosti" placeholder="Odaberi sifru delatnosti">
-        <el-option
-            v-for="var_delatnost in delatnosti"
-            :key="var_delatnost.code"
-            :label="var_delatnost.name"
-            :value="var_delatnost"
-        >
-        </el-option>
-    </el-select>
-    <el-select v-model="potencijalniKlijent" placeholder="Odaberi potencijalnog klijenta">
-        <el-option
-            v-for="var_klijent in potencijalniKlijenti"
-            :key="var_klijent.id"
-            :label="var_klijent.name"
-            :value="var_klijent"
-        >
-        </el-option>
-    </el-select>
+    <el-form-item class="mesto" label="Odaberite mesto">
+        <select @change="handleCitySelected" v-model="mesto" class="select">
+            <option
+                v-for="var_mesto in mesta"
+                :key="var_mesto.postalCode"
+                :label="var_mesto.name"
+                :value="var_mesto"
+            >
+            </option>
+        </select>
+    </el-form-item>
+    <el-form-item class="adresa" label="Odaberite ulicu i broj">
+        <el-col class="adresa-first" :span="50">
+            <select v-model="ulica" class="select">
+                <option value="" disabled selected hidden>Ulica</option>
+                <option
+                    v-for="var_ulica in ulice"
+                    :key="var_ulica.id"
+                    :label="var_ulica.street"
+                    :value="var_ulica"
+                >
+                </option>
+            </select>
+        </el-col>
+        <el-col class="adresa-second" :span="50">
+            <el-input v-model="broj" placeholder="Broj"></el-input>
+        </el-col>
+    </el-form-item>
+    <el-form-item class="delatnost" label="Odaberi sifru delatnosti">
+        <select v-model="sifraDelatnosti" class="select">
+            <option
+                v-for="var_delatnost in delatnosti"
+                :key="var_delatnost.code"
+                :label="var_delatnost.name"
+                :value="var_delatnost"
+            >
+            </option>
+        </select>
+    </el-form-item>
+    <el-form-item class="klijent" label="Odaberi potencijalnog klijenta">
+        <select v-model="potencijalniKlijent" class="select">
+            <option
+                v-for="var_klijent in potencijalniKlijenti"
+                :key="var_klijent.id"
+                :label="var_klijent.name"
+                :value="var_klijent"
+            >
+            </option>
+        </select>
+    </el-form-item>
     <!-- <el-form-item label="Ulica">
         <el-input v-model="ulica"></el-input>
     </el-form-item> -->
-    <el-form-item label="Broj">
-        <el-input v-model="broj"></el-input>
-    </el-form-item>
+    
     <el-form-item>
         <el-button type="primary" @click="submitForm()">Unesi</el-button>
     </el-form-item>
@@ -115,6 +127,7 @@ export default {
         fetch('http://localhost:8080/vip/api/city')
             .then((response) => response.json())
             .then((data) => { 
+                console.log(data)
                 mesta.value = data._embedded.city
             })
             .catch((error) => console.log(error))
@@ -182,8 +195,29 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 
+.mesto select {
+    width: 100%;
+}
 
+.adresa .adresa-first {
+    width: 50%;
+}
 
+.adresa .adresa-first select {
+    width: 90%;
+}
+
+.adresa .adresa-second {
+    width: 50%;
+}
+
+.delatnost select {
+    width: 100%;
+}
+
+.klijent select {
+    width: 100%;
+}
 </style>

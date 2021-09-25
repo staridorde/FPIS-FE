@@ -83,6 +83,27 @@ export default {
   color: #2c3e50;
 }
 
+#app .el-header {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+#app .el-main {
+  padding: 1em;
+  margin: 0 auto;
+  width: 60%;
+}
+
+#app .el-form-item__label {
+  min-width: 240px;
+  font-size: 1.5em;
+}
+
+#app .el-form-item__content {
+  width: 320px;
+}
+
 #nav {
   padding: 30px;
 }

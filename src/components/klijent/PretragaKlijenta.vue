@@ -43,33 +43,40 @@
         <el-form-item label="Godina osnivanja">
             <el-input v-model="currentClient.yearOfEstablishment"></el-input>
         </el-form-item>
-        <el-select @change="handleCitySelected" v-model="currentClient.address.city" placeholder="Odaberite mesto">
-            <el-option
-                v-for="city in cities"
-                :key="city.postalCode"
-                :label="city.name"
-                :value="city"
-            >
-            </el-option>
-        </el-select>
-        <el-select v-model="currentClient.address.street" placeholder="Odaberite ulicu">
-            <el-option
-                v-for="street in streets"
-                :key="street.id"
-                :label="street.street"
-                :value="street"
-            >
-            </el-option>
-        </el-select>
-        <el-select v-model="currentClient.activity" placeholder="Odaberi potencijalnog klijenta">
-            <el-option
-                v-for="activity in activities"
-                :key="activity.code"
-                :label="activity.name"
-                :value="activity"
-            >
-            </el-option>
-        </el-select>
+        <el-form-item class="mesto" label="Odaberite mesto">
+            <select @change="handleCitySelected" v-model="currentClient.address.city" class="select" style="min-width: 200px;">
+                <option
+                    v-for="city in cities"
+                    :key="city.postalCode"
+                    :label="city.name"
+                    :value="city"
+                >
+                </option>
+            </select>
+        </el-form-item>
+        <el-form-item class="adresa" label="Odaberite ulicu">
+            <select v-model="currentClient.address.street" class="select" style="min-width: 200px;">
+                <option
+                    v-for="street in streets"
+                    :key="street.id"
+                    :label="street.street"
+                    :value="street"
+                >
+                </option>
+            </select>
+        </el-form-item>
+        <el-form-item class="klijent" label="Odaberi potencijalnog klijenta">
+            <select v-model="currentClient.activity" class="select" style="min-width: 200px;">
+                <option
+                    v-for="activity in activities"
+                    :key="activity.code"
+                    :label="activity.name"
+                    :value="activity"
+                >
+                </option>
+            </select>
+        </el-form-item>
+        
         <!-- <el-select v-model="potencijalniKlijent" placeholder="Odaberi potencijalnog klijenta">
             <el-option
                 v-for="var_klijent in potencijalniKlijenti"
@@ -150,6 +157,7 @@ export default {
             .catch((error) => console.log(error))
 
         const handleCitySelected = () => {
+            console.log(currentClient.value)
             fetch(`http://localhost:8080/vip/client/address/${currentClient.value.address.city.postalCode}`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -162,14 +170,14 @@ export default {
         fetch('http://localhost:8080/vip/api/city')
             .then((response) => response.json())
             .then((data) => { 
+                console.log(data)
                 cities.value = data._embedded.city
             })
             .catch((error) => console.log(error))
         
         const handleEdit = (index) => {
-            console.log(index)
             currentClient.value = form.clients[index]
-            console.log(currentClient.value)
+            // console.log(currentClient.value)
         }
 
 
@@ -215,4 +223,19 @@ export default {
 
 <style>
 
+.mesto select {
+    width: 100%;
+}
+
+.adresa select {
+    width: 100%;
+}
+
+.delatnost select {
+    width: 100%;
+}
+
+.klijent select {
+    width: 100%;
+}
 </style>

@@ -1,63 +1,9 @@
 <template>
-<!-- <div v-if="currentClient">
-        <el-form-item label="ID">
-            <el-input v-model="currentClient.id" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="PIB">
-            <el-input v-model="currentClient.pib"></el-input>
-        </el-form-item>
-        <el-form-item label="Naziv klijenta">
-            <el-input v-model="currentClient.name"></el-input>
-        </el-form-item>
-        <el-form-item label="Telefon">
-            <el-input v-model="currentClient.phoneNumber"></el-input>
-        </el-form-item>
-        <el-form-item label="E-mail">
-            <el-input v-model="currentClient.email"></el-input>
-        </el-form-item>
-        <el-form-item label="Web strana">
-            <el-input v-model="currentClient.webPage"></el-input>
-        </el-form-item>
-        <el-form-item label="Godina osnivanja">
-            <el-input v-model="currentClient.yearOfEstablishment"></el-input>
-        </el-form-item>
-        <el-select @change="handleCitySelected" v-model="currentClient.address.city" placeholder="Odaberite mesto">
-            <el-option
-                v-for="city in cities"
-                :key="city.postalCode"
-                :label="city.name"
-                :value="city"
-            >
-            </el-option>
-        </el-select>
-        <el-select v-model="currentClient.address" placeholder="Odaberite ulicu">
-            <el-option
-                v-for="street in streets"
-                :key="street.id"
-                :label="street.street"
-                :value="street"
-            >
-            </el-option>
-        </el-select>
-        <el-select v-model="currentClient.activity" placeholder="Odaberi potencijalnog klijenta">
-            <el-option
-                v-for="activity in activities"
-                :key="activity.code"
-                :label="activity.name"
-                :value="activity"
-            >
-            </el-option>
-        </el-select>
-        <el-form-item>
-            <el-button type="primary" @click="handleSaveEdit">Potvrdi izmene</el-button>
-        </el-form-item>
-    </div> -->
-
   <el-form
     :model="form"
     label-width="120px"
   >
-    <el-form-item label="Datum zahteva(yyyy-mm-dd)">
+    <el-form-item label="Datum zahteva(dd-mm-yyyy)">
         <el-input v-model="form.date"></el-input>
     </el-form-item>
     <el-form-item>
@@ -69,21 +15,26 @@
       <el-table-column prop="approved" label="Odobreno"></el-table-column>
       <el-table-column label="Edit">
         <template #default="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+          <el-button size="mini" @click="handleEditRequest(scope.$index, scope.row)">Edit</el-button>
         </template>
       </el-table-column>
     </el-table>
     <div v-if="currentRequest">
-      <el-form-item label="Odaberite zaposlenog">
-        <el-select v-model="currentRequest.employee">
-            <el-option
+      <el-form-item class="zaposleni" label="Odaberite zaposlenog">
+        <select
+            @change="handleEmployeeChange"
+            :value="currentRequest.employee"
+            class="select"
+            style="min-width: 200px;"
+        >
+            <option
                 v-for="employee in employees"
                 :key="employee.id"
                 :label="`${employee.firstName} ${employee.lastName}`"
                 :value="employee"
             >
-            </el-option>
-        </el-select>
+            </option>
+        </select>
         </el-form-item>
         <el-form-item label="Datum">
             <el-input v-model="currentRequest.date"></el-input>
@@ -94,10 +45,6 @@
                 <el-radio-button label="Ne"></el-radio-button>
             </el-radio-group>
         </el-form-item>
-        <!-- <el-form-item>
-            <el-button type="primary" @click="dodaj">Unesi</el-button>
-            <el-button type="primary" @click="odustani">Odustani</el-button>
-        </el-form-item> -->
         <el-form-item label="Opis">
             <el-input
                 v-model="description"
@@ -108,8 +55,7 @@
         </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="handleAddRequest">Potvrdi</el-button>
-            <el-button type="primary">Izmeni</el-button>
-            <el-button type="primary">Obrisi</el-button>
+            <el-button type="primary" @click="handleSaveEdit">Sacuvaj izmenu</el-button>
         </el-form-item>
         <el-table :data="currentRequest.requestItems" style="min-height: 200px; background-color: rgba(1,1,1, 0.11)">
             <el-table-column prop="orderNumber" label="RB"></el-table-column>
@@ -117,13 +63,13 @@
             <el-table-column prop="description" label="Opis"></el-table-column>
             <el-table-column align="right">
                 <template #default="scope">
-                <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
+                <el-button size="mini" @click="handleEditRequestItem(scope.$index, scope.row)"
                     >Edit</el-button
                 >
                 <el-button
                     size="mini"
                     type="danger"
-                    @click="handleDelete(scope.$index, scope.row)"
+                    @click="handleDeleteRequestItem(scope.$index, scope.row)"
                     >Delete</el-button
                 >
                 </template>
@@ -148,6 +94,7 @@ export default {
         let requestId
 
         const currentRequest = ref(null)
+        const currentRequestItemEdit = ref(null)
         const description = ref('')
 
         const cities = ref([])
@@ -158,35 +105,10 @@ export default {
 
         const requestTemplate = {
           approved: undefined,
-          employee: {
-            id: undefined
-          },
+          employee: {},
           requestItems: [],
           date: ''
         }
-
-        // const postClientObjectTemplate = {
-        //     PIB: '',
-        //     name: '',
-        //     email: '',
-        //     webPage: '',
-        //     phoneNumber: '',
-        //     yearOfEstablishment: '',
-        //     address: {
-        //         id: 0,
-        //         number: 0,
-        //         city: {
-        //             postalCode: 0
-        //         }
-        //     },
-        //     potentialClient:{
-        //         id: 0
-        //     },
-        //     activity: {
-        //         code: 0
-        //     }
-        // }
-
 
         const handleSearch = () => {
             console.log(form.date)
@@ -211,29 +133,6 @@ export default {
             description.value = ''
         }
 
-        // const dodaj = () => {
-        //     requestTemplate.approved = form.approved === 'Da' ? true : false
-        //     requestTemplate.employee.id = form.employee.id
-        //     requestTemplate.date = form.date
-        //     fetch('http://localhost:8080/vip/request', {
-        //       method: 'POST',
-        //       headers: {
-        //         "Content-Type": "application/json"
-        //       },
-        //       body: JSON.stringify(requestTemplate)
-        //     })
-        //       .then((request) => request.json())
-        //       .then((data) => {
-        //         requestId = data
-        //        })
-        //       .catch((error) => console.log(error))
-        // }
-
-        // const odustani = () => {
-        //     // formaZahtev.value.resetFields()
-        //     // console.log(formaZahtev.value)
-        // }
-
         fetch('http://localhost:8080/vip/api/employee')
             .then((response) => response.json())
             .then((data) => {
@@ -251,15 +150,15 @@ export default {
                 .catch((error) => console.log(error))
         }
 
-        const handleEdit = (index) => {
-            console.log(index)
+        const handleEditRequest = (index) => {
+            // console.log(form.requests[index])
             currentRequest.value = form.requests[index]
-            // currentRequest.value.approved = currentRequest.value.approved ? 'Da' : 'Ne'
+            // console.log(currentRequest.value)
         }
 
         const handleSubmitForm = () => {
             requestTemplate.approved = currentRequest.value.approved === 'Da' ? true : false
-            requestTemplate.employee.id = currentRequest.value.employee.id
+            requestTemplate.employee = currentRequest.value.employee
             requestTemplate.date = currentRequest.value.date
             console.log(requestTemplate.date)
             requestTemplate.requestItems = currentRequest.value.requestItems.map((item) => {
@@ -280,10 +179,37 @@ export default {
                 .catch((error) => console.log(error))
         }
 
+        const handleEmployeeChange = (e) => {
+            currentRequest.value.employee = employees.value[e.target.options.selectedIndex]
+        }
+
+        // eslint-disable-next-line no-unused-vars
+        const handleEditRequestItem = (index, row) => {
+            const editItemData = {
+                index: index,
+                data: JSON.parse(JSON.stringify(currentRequest.value.requestItems[index])),
+            }
+            currentRequestItemEdit.value = editItemData
+            description.value = editItemData.data.description
+        }
+
+        // eslint-disable-next-line no-unused-vars
+        const handleDeleteRequestItem = (index, row) => {
+            currentRequest.value.requestItems.splice(index, 1)
+        }
+
+        const handleSaveEdit = () => {
+            currentRequestItemEdit.value.data.description = description.value
+            description.value = ''
+            currentRequestItemEdit.value = null
+            currentRequest.value.requestItems[currentRequestItemEdit.value.index] = currentRequestItemEdit.value.data
+        }
+
         return {
           form,
           description,
           currentRequest,
+          currentRequestItemEdit,
         //   requestItems,
           cities,
           streets,
@@ -291,16 +217,21 @@ export default {
           handleCitySelected,
           handleAddRequest,
           handleSearch,
-          handleEdit,
-        //   dodaj,
-        //   odustani,
+          handleEditRequest,
           handleSubmitForm,
-        //   handleSaveEdit,
+          handleEmployeeChange,
+          handleEditRequestItem,
+          handleDeleteRequestItem,
+          handleSaveEdit,
         }
     }
 }
 </script>
 
 <style>
+
+.zaposleni select {
+    width: 100%;
+}
 
 </style>

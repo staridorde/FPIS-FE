@@ -4,18 +4,18 @@
     :model="form"
     label-width="120px"
   >
-    <el-form-item>
-      <el-select v-model="form.zaposleni" placeholder="Odaberite zaposlenog">
-          <el-option
+    <el-form-item class="zaposleni" label="Odaberite zaposlenog">
+      <select v-model="form.zaposleni" class="select">
+          <option
               v-for="zaposlen in sviZaposleni"
               :key="zaposlen.id"
               :label="`${zaposlen.firstName} ${zaposlen.lastName}`"
               :value="zaposlen"
           >
-          </el-option>
-      </el-select>
+          </option>
+      </select>
     </el-form-item>
-    <el-form-item label="Datum(dd-mm-yyyy)">
+    <el-form-item label="Datum(yyyy-mm-dd)">
         <el-input v-model="form.datum"></el-input>
     </el-form-item>
     <el-form-item label="Odobreno">
@@ -26,7 +26,6 @@
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="dodaj">Unesi</el-button>
-      <el-button type="primary" @click="odustani">Odustani</el-button>
     </el-form-item>
     <el-form-item label="Opis">
       <el-input
@@ -38,8 +37,7 @@
     </el-form-item>
     <el-form-item>
       <el-button type="primary" @click="handleAddRequest">Potvrdi</el-button>
-      <el-button type="primary">Izmeni</el-button>
-      <el-button type="primary">Obrisi</el-button>
+      <el-button type="primary" @click="handleSaveEdit">Potvrdi izmenu</el-button>
     </el-form-item>
     <el-table :data="requestItems" style="min-height: 200px; background-color: rgba(1,1,1, 0.11)">
       <el-table-column prop="orderNumber" label="RB"></el-table-column>
@@ -47,13 +45,13 @@
       <el-table-column prop="description" label="Opis"></el-table-column>
       <el-table-column align="right">
         <template #default="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)"
+          <el-button size="mini" @click="handleEditRequestItem(scope.$index, scope.row)"
             >Edit</el-button
           >
           <el-button
             size="mini"
             type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
+            @click="handleDeleteRequestItem(scope.$index, scope.row)"
             >Delete</el-button
           >
         </template>
@@ -78,6 +76,7 @@ export default {
 
     const opis = ref('')
     const requestItems = ref([])
+    const currentRequestItemEdit = ref(null)
 
     const requestTemplate = {
       approved: undefined,
@@ -134,12 +133,29 @@ export default {
       opis.value = ''
     }
 
-    const handleEdit = (index, row) => {
-      console.log(index, row)
+    // eslint-disable-next-line no-unused-vars
+    const handleEditRequestItem = (index, row) => {
+      const editItemData = {
+          index: index,
+          data: JSON.parse(JSON.stringify(requestItems.value[index])),
+      }
+      currentRequestItemEdit.value = editItemData
+      opis.value = editItemData.data.description
     }
 
-    const handleDelete = (index, row) => {
-      console.log(index, row)
+    // eslint-disable-next-line no-unused-vars
+    const handleDeleteRequestItem = (index, row) => {
+      requestItems.value.splice(index, 1)
+    }
+
+    const handleSaveEdit = () => {
+      console.log(currentRequestItemEdit.value)
+      console.log(opis.value)
+      console.log(requestItems.value)
+      currentRequestItemEdit.value.data.description = opis.value
+      opis.value = ''
+      currentRequestItemEdit.value = null
+      requestItems.value[currentRequestItemEdit.value.index] = currentRequestItemEdit.value.data
     }
 
     const handleSubmitForm = () => {
@@ -173,15 +189,22 @@ export default {
       requestId,
       handleAddRequest,
       handleSubmitForm,
-      handleEdit,
-      handleDelete,
+      handleEditRequestItem,
+      handleDeleteRequestItem,
       odustani,
       dodaj,
+      handleSaveEdit,
     }
   }
 }
 </script>
 
 <style>
+
+.zaposleni select {
+  width: 100%;
+}
+
+
 
 </style>
