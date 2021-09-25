@@ -27,44 +27,48 @@
     <el-form-item>
       <el-button type="primary" @click="dodaj">Unesi</el-button>
     </el-form-item>
-    <el-form-item label="Opis">
-      <el-input
-        v-model="opis"
-        type="textarea"
-        :rows="2"
-      >
-      </el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="handleAddRequest">Potvrdi</el-button>
-      <el-button type="primary" @click="handleSaveEdit">Potvrdi izmenu</el-button>
-    </el-form-item>
-    <el-table :data="requestItems" style="min-height: 200px; background-color: rgba(1,1,1, 0.11)">
-      <el-table-column prop="orderNumber" label="RB"></el-table-column>
-      <el-table-column prop="requestId" label="IDZahteva"></el-table-column>
-      <el-table-column prop="description" label="Opis"></el-table-column>
-      <el-table-column align="right">
-        <template #default="scope">
-          <el-button size="mini" @click="handleEditRequestItem(scope.$index, scope.row)"
-            >Edit</el-button
-          >
-          <el-button
-            size="mini"
-            type="danger"
-            @click="handleDeleteRequestItem(scope.$index, scope.row)"
-            >Delete</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-form-item>
-      <el-button type="primary" @click="handleSubmitForm">Potvrdi sve</el-button>
-    </el-form-item>
+    <div v-if="requestMade">
+      <el-form-item label="Opis">
+        <el-input
+          v-model="opis"
+          type="textarea"
+          :rows="2"
+        >
+        </el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="handleAddRequest">Potvrdi</el-button>
+        <el-button type="primary" @click="handleSaveEdit">Potvrdi izmenu</el-button>
+      </el-form-item>
+      <el-table :data="requestItems" style="min-height: 200px; background-color: rgba(1,1,1, 0.11)">
+        <el-table-column prop="orderNumber" label="RB"></el-table-column>
+        <el-table-column prop="requestId" label="IDZahteva"></el-table-column>
+        <el-table-column prop="description" label="Opis"></el-table-column>
+        <el-table-column align="right">
+          <template #default="scope">
+            <el-button size="mini" @click="handleEditRequestItem(scope.$index, scope.row)"
+              >Edit</el-button
+            >
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDeleteRequestItem(scope.$index, scope.row)"
+              >Delete</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-form-item>
+        <el-button type="primary" @click="handleSubmitForm">Potvrdi sve</el-button>
+      </el-form-item>
+    </div>
   </el-form>
 </template>
 
 <script>
 import { reactive, ref } from '@vue/reactivity'
+import { ElNotification } from 'element-plus'
+
 export default {
   setup() {
     const formaZahtev = ref(null)
@@ -77,6 +81,7 @@ export default {
     const opis = ref('')
     const requestItems = ref([])
     const currentRequestItemEdit = ref(null)
+    const requestMade = ref(false)
 
     const requestTemplate = {
       approved: undefined,
@@ -111,8 +116,8 @@ export default {
       })
         .then((request) => request.json())
         .then((data) => {
+          requestMade.value = true
           requestId = data
-
         })
         .catch((error) => console.log(error))
     }
@@ -149,13 +154,10 @@ export default {
     }
 
     const handleSaveEdit = () => {
-      console.log(currentRequestItemEdit.value)
-      console.log(opis.value)
-      console.log(requestItems.value)
       currentRequestItemEdit.value.data.description = opis.value
-      opis.value = ''
-      currentRequestItemEdit.value = null
       requestItems.value[currentRequestItemEdit.value.index] = currentRequestItemEdit.value.data
+      currentRequestItemEdit.value = null
+      opis.value = ''
     }
 
     const handleSubmitForm = () => {
@@ -176,8 +178,22 @@ export default {
         },
         body: JSON.stringify(requestTemplate)
       })
-        .then((response) => console.log(response))
-        .catch((error) => console.log(error))
+      .then((response) => response.text())
+      .then((data) => {
+        console.log(data)
+        ElNotification({
+          title: data,
+          message: 'You have succesfully saved a new request!',
+          type: 'success',
+        })
+      })
+      .catch(() => {
+        ElNotification({
+          title: 'Error',
+          message: 'The request has not been made!',
+          type: 'error',
+        })
+      })
     }
 
     return {
@@ -185,6 +201,7 @@ export default {
       sviZaposleni,
       formaZahtev,
       form,
+      requestMade,
       requestItems,
       requestId,
       handleAddRequest,

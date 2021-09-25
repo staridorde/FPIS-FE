@@ -84,6 +84,8 @@
 
 <script>
 import { reactive, ref } from '@vue/reactivity'
+import { ElNotification } from 'element-plus'
+
 export default {
     setup() {
         const form = reactive({
@@ -175,8 +177,22 @@ export default {
                     },
                     body: JSON.stringify(requestTemplate)
                  })
-                .then((response) => console.log(response))
-                .catch((error) => console.log(error))
+                .then((response) => response.text())
+                .then((data) => {
+                    ElNotification({
+                        title: data,
+                        message: 'You have succesfully saved a new request!',
+                        type: 'success',
+                    })
+                })
+                .catch((error) => { 
+                    console.log(error)
+                    ElNotification({
+                        title: 'FAIL',
+                        message: 'You have succesfully saved a new request!',
+                        type: 'success',
+                    })
+                })
         }
 
         const handleEmployeeChange = (e) => {
@@ -200,9 +216,9 @@ export default {
 
         const handleSaveEdit = () => {
             currentRequestItemEdit.value.data.description = description.value
-            description.value = ''
-            currentRequestItemEdit.value = null
             currentRequest.value.requestItems[currentRequestItemEdit.value.index] = currentRequestItemEdit.value.data
+            currentRequestItemEdit.value = null
+            description.value = ''
         }
 
         return {

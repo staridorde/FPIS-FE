@@ -104,6 +104,7 @@
 
 <script>
 import { reactive, ref } from '@vue/reactivity'
+import { ElNotification } from 'element-plus'
 export default {
     setup() {
         const form = reactive({
@@ -202,8 +203,22 @@ export default {
                 },
                 body: JSON.stringify(postClientObjectTemplate)
             })
-                .then((response) => console.log(response))
-                .catch((error) => console.log(error))
+                .then((response) => response.text())
+                .then((data) => {
+                    ElNotification({
+                        title: data,
+                        message: 'You have succesfully saved a new request!',
+                        type: 'success',
+                    })
+                })
+                .catch((error) => {
+                    console.log(error)
+                    ElNotification({
+                        title: 'FAIL',
+                        message: 'You have succesfully saved a new request!',
+                        type: 'success',
+                    })
+                })
         }
 
         return {
