@@ -44,7 +44,12 @@
             <el-input v-model="currentClient.yearOfEstablishment"></el-input>
         </el-form-item>
         <el-form-item class="mesto" label="Odaberite mesto">
-            <select @change="handleCitySelected" v-model="currentClient.address.city" class="select" style="min-width: 200px;">
+            <select 
+                @click="handleCitySelected" 
+                :value="currentClient.address.city"
+                class="select" 
+                style="min-width: 200px;"
+            >
                 <option
                     v-for="city in cities"
                     :key="city.postalCode"
@@ -55,7 +60,12 @@
             </select>
         </el-form-item>
         <el-form-item class="adresa" label="Odaberite ulicu">
-            <select v-model="currentClient.address.street" class="select" style="min-width: 200px;">
+            <select
+                @change="handleStreetChange"
+                :value="currentClient.address"
+                class="select"
+                style="min-width: 200px;"
+            >
                 <option
                     v-for="street in streets"
                     :key="street.id"
@@ -65,8 +75,13 @@
                 </option>
             </select>
         </el-form-item>
-        <el-form-item class="klijent" label="Odaberi potencijalnog klijenta">
-            <select v-model="currentClient.activity" class="select" style="min-width: 200px;">
+        <el-form-item class="klijent" label="Odaberi delatnost">
+            <select
+                @change="handleActivityChange"
+                :value="currentClient.activity"
+                class="select"
+                style="min-width: 200px;"
+            >
                 <option
                     v-for="activity in activities"
                     :key="activity.code"
@@ -77,24 +92,21 @@
             </select>
         </el-form-item>
         
-        <!-- <el-select v-model="potencijalniKlijent" placeholder="Odaberi potencijalnog klijenta">
-            <el-option
-                v-for="var_klijent in potencijalniKlijenti"
-                :key="var_klijent.id"
-                :label="var_klijent.name"
-                :value="var_klijent"
+        <el-form-item class="klijent" label="Odaberi potencijalnog klijenta">
+            <select 
+                @change="handlePotentialClientChange"
+                :value="currentClient.potentialClient" 
+                class="select"
             >
-            </el-option>
-        </el-select> -->
-        <!-- <el-select v-model="potencijalniKlijent" placeholder="Odaberi potencijalnog klijenta">
-            <el-option
-                v-for="var_klijent in potencijalniKlijenti"
-                :key="var_klijent.id"
-                :label="var_klijent.name"
-                :value="var_klijent"
-            >
-            </el-option>
-        </el-select> -->
+                <option
+                    v-for="client in potentialClients"
+                    :key="client.id"
+                    :label="client.name"
+                    :value="client"
+                >
+                </option>
+            </select>
+        </el-form-item>
         <el-form-item>
             <el-button type="primary" @click="handleSaveEdit">Potvrdi izmene</el-button>
         </el-form-item>
@@ -116,6 +128,7 @@ export default {
         const cities = ref([])
         const streets = ref([])
         const activities = ref([])
+        const potentialClients = ref([])
 
         const postClientObjectTemplate = {
             PIB: '',
@@ -159,6 +172,7 @@ export default {
 
         const handleCitySelected = () => {
             console.log(currentClient.value)
+            // currentClient.value.address.city = cities.value[e.target.options.selectedIndex]
             fetch(`http://localhost:8080/vip/client/address/${currentClient.value.address.city.postalCode}`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -173,6 +187,14 @@ export default {
             .then((data) => { 
                 console.log(data)
                 cities.value = data._embedded.city
+            })
+            .catch((error) => console.log(error))
+        
+        fetch('http://localhost:8080/vip/api/potentialClient')
+            .then((response) => response.json())
+            .then((data) => {
+                console.log(data) 
+                potentialClients.value = data._embedded.potentialClient
             })
             .catch((error) => console.log(error))
         
@@ -221,16 +243,31 @@ export default {
                 })
         }
 
+        const handleActivityChange = (e) => {
+            currentClient.value.activity = activities.value[e.target.options.selectedIndex]
+        }
+
+        const handleStreetChange = (e) => {
+            currentClient.value.address.street = streets.value[e.target.options.selectedIndex]
+        }
+        const handlePotentialClientChange = (e) => {
+            // currentRequest.value.employee = employees.value[e.target.options.selectedIndex]
+            currentClient.value.potentialClient = potentialClients.value[e.target.options.selectedIndex]
+        }
         return {
           form,
           currentClient,
           cities,
           streets,
           activities,
+          potentialClients,
           handleCitySelected,
           handleSearch,
           handleEdit,
           handleSaveEdit,
+          handleActivityChange,
+          handleStreetChange,
+          handlePotentialClientChange,
         }
     }
 }
